@@ -1,0 +1,390 @@
+"""Generates the static HTS pages with a shared header and footer."""
+from pathlib import Path
+from html import escape
+
+OUT = Path(__file__).parent / "site"
+EMAIL = "sales@hospitalitytextilesupply.com"
+PHONE = "866-568-0746"
+PHONE_HREF = "+18665680746"
+
+MAIL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>'
+PHONE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>'
+CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+
+CATEGORIES = [
+    ("maid-cart-bags.html", "Maid Cart Bags"),
+    ("pocket-organizers.html", "Pocket Organizers"),
+    ("linen-hampers-liners.html", "Linen Hampers &amp; Liners"),
+]
+
+
+def head(title, desc):
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="icon" type="image/png" href="img/hts-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+"""
+
+
+def header(current=None, quote_href="index.html#contact"):
+    items = "".join(
+        f'<li><a href="{href}"{" aria-current=\"page\"" if href == current else ""}>{name}</a></li>'
+        for href, name in CATEGORIES
+    )
+    prod_current = ' aria-current="page"' if current else ""
+    return f"""<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html" aria-label="Hospitality Textile Supply — home">
+      <img src="img/hts-logo.png" alt="Hospitality Textile Supply" width="440" height="426">
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <ul class="nav-list">
+        <li class="has-dropdown">
+          <button class="nav-link" type="button" aria-expanded="false"{prod_current}>Products {CHEV}</button>
+          <ul class="dropdown">{items}</ul>
+        </li>
+        <li><a class="nav-link" href="index.html#about">About HTS</a></li>
+        <li><a class="nav-link" href="index.html#contact">Contact</a></li>
+      </ul>
+      <a class="btn btn--gold-edge" href="{quote_href}">Request a Quote</a>
+    </nav>
+  </div>
+</header>
+"""
+
+
+def footer():
+    return f"""<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">Hospitality Textile Supply</div>
+    <ul class="footer-nav">
+      <li><a href="index.html#products">Products</a></li>
+      <li><a href="index.html#about">About HTS</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="index.html#contact">Request a Quote</a></li>
+    </ul>
+  </div>
+  <div class="wrap footer-meta">
+    <span>&copy; <span data-year>2026</span> Hospitality Textile Supply</span>
+    <span><a href="mailto:{EMAIL}">{EMAIL}</a> &nbsp;|&nbsp; <a href="tel:{PHONE_HREF}">{PHONE}</a></span>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>
+"""
+
+
+def breadcrumb(name):
+    return f"""<div class="wrap breadcrumb">
+  <nav aria-label="Breadcrumb"><ol>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#products">Products</a></li>
+    <li><span aria-current="page">{name}</span></li>
+  </ol></nav>
+</div>
+<div class="page-title"><div class="wrap"><h1>{name}</h1></div></div>
+"""
+
+
+def contact_lines(label=False):
+    lbl = '<span><strong>Contact</strong><br>' if label else "<span>"
+    return f"""<ul class="contact-lines">
+      <li>{MAIL_SVG}{lbl}<a href="mailto:{EMAIL}">{EMAIL}</a></span></li>
+      <li>{PHONE_SVG}<span>{"or call " if label else ""}<a href="tel:{PHONE_HREF}"><strong>{PHONE}</strong></a></span></li>
+    </ul>"""
+
+
+def product_select(options, default):
+    opts = "".join(
+        f'<option value="{escape(o)}"{" selected" if o == default else ""}>{escape(o)}</option>' for o in options
+    )
+    return f"""<div class="field">
+          <label for="f-product">Product of interest <span class="req">*</span></label>
+          <select id="f-product" name="product" required>{opts}</select>
+        </div>"""
+
+
+def inquiry_fields(options, default, cols3=False):
+    """Name, Company, Email, Product, Quantity, Message — all category pages."""
+    grid = "form-grid form-grid--3" if cols3 else "form-grid"
+    msg_cls = "field" if cols3 else "field field--full"
+    return f"""<div class="{grid}">
+        <div class="field">
+          <label for="f-name">Name <span class="req">*</span></label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="f-company">Company <span class="req">*</span></label>
+          <input id="f-company" name="company" type="text" autocomplete="organization" required>
+        </div>
+        <div class="field">
+          <label for="f-email">Email <span class="req">*</span></label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        {product_select(options, default)}
+        <div class="field">
+          <label for="f-qty">Quantity <span class="req">*</span></label>
+          <input id="f-qty" name="quantity" type="text" inputmode="numeric" required placeholder="e.g. 24">
+        </div>
+        <div class="{msg_cls}">
+          <label for="f-msg">Message</label>
+          <textarea id="f-msg" name="message" rows="3" placeholder="Sizes, colors, cart model or anything else we should know"></textarea>
+        </div>
+      </div>"""
+
+
+def form_actions():
+    return """<div class="form-actions">
+        <button class="btn" type="submit">Send Inquiry</button>
+      </div>
+      <p class="form-status" role="status" hidden></p>"""
+
+
+def product_card(img, title, alt, enquire):
+    media = (f'<img src="img/{img}" alt="{alt}" loading="lazy">' if img
+             else '<div class="placeholder">Photo to be added</div>')
+    return f"""<article class="product">
+      <div class="media">{media}</div>
+      <h2>{title}</h2>
+      <a class="btn btn--gold-edge" href="#inquiry-form" data-enquire="{escape(enquire)}">Enquire About This Item</a>
+    </article>"""
+
+
+def other_cats_list(current):
+    return "".join(f'<li><a href="{h}"{" aria-current=\"page\"" if h == current else ""}>{n}</a></li>' for h, n in CATEGORIES)
+
+
+# ---------------- Homepage ----------------
+def home():
+    return head("Hospitality Textile Supply | Cart Bags, Pocket Organizers & Linen Hampers",
+                "Textile essentials for housekeeping teams: maid cart bags, pocket organizers and linen hampers & liners for hotels, healthcare, senior living, gyms, spas and campuses.") + header() + f"""
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">Textile essentials for your housekeeping team.</h1>
+      <p>Explore cart bags, pocket organizers and linen hampers.</p>
+      <a class="btn" href="#products">Explore Products</a>
+    </div>
+    <div class="hero-media">
+      <img src="img/hero-cart.jpg" alt="Housekeeping cart with black cart bags in a hotel hallway" width="604" height="394">
+    </div>
+  </section>
+
+  <section class="section" id="products" aria-labelledby="lines-title">
+    <div class="wrap">
+      <h2 class="section-title" id="lines-title">Explore our product lines</h2>
+      <span class="rule"></span>
+      <div class="card-grid">
+        <a class="line-card" href="maid-cart-bags.html">
+          <div class="media"><img src="img/maid-cart-bags.jpg" alt="Brown maid cart bag with hanging loops" loading="lazy"></div>
+          <div class="body"><h3>Maid Cart Bags</h3><span class="rule"></span><span class="more">View options &rarr;</span></div>
+        </a>
+        <a class="line-card" href="pocket-organizers.html">
+          <div class="media"><img src="img/pocket-organizers.jpg" alt="Black hanging pocket organizer holding cleaning supplies" loading="lazy"></div>
+          <div class="body"><h3>Pocket Organizers</h3><span class="rule"></span><span class="more">View options &rarr;</span></div>
+        </a>
+        <a class="line-card" href="linen-hampers-liners.html">
+          <div class="media"><img src="img/linen-hampers.jpg" alt="White linen hamper on a steel frame in a hospital corridor" loading="lazy"></div>
+          <div class="body"><h3>Linen Hampers &amp; Liners</h3><span class="rule"></span><span class="more">View options &rarr;</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section markets" id="markets" aria-labelledby="markets-title">
+    <div class="wrap">
+      <h2 class="section-title" id="markets-title">Markets We Serve</h2>
+      <div class="market-grid">
+        <div class="market"><h3>Hotels &amp; Resorts</h3><p>Housekeeping and linen handling.</p></div>
+        <div class="market"><h3>Hospitals &amp; Clinics</h3><p>Textile bags and linen collection.</p></div>
+        <div class="market"><h3>Senior Living</h3><p>Everyday laundry and housekeeping.</p></div>
+        <div class="market"><h3>Gyms, Spas &amp; Campuses</h3><p>Towel and linen collection.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about" id="about" aria-labelledby="about-title">
+    <div class="wrap about-inner">
+      <div>
+        <h2 class="section-title" id="about-title">About HTS</h2>
+        <span class="rule"></span>
+        <p>Hospitality Textile Supply provides the textile essentials that keep housekeeping and laundry teams moving: maid cart bags, pocket organizers, and linen hampers &amp; liners.</p>
+        <p>Tell us what your team uses today, including cart models, sizes and colors, and we&rsquo;ll help you find the right fit.</p>
+      </div>
+      <ul class="about-list">
+        <li><strong>Cart bags &amp; organizers</strong>Replacement bags and caddies for housekeeping carts.</li>
+        <li><strong>Linen handling</strong>Hampers and liners for collecting laundry and linens.</li>
+        <li><strong>Direct help</strong>Email or call us for product and ordering questions.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="wrap inquiry">
+      <form class="js-inquiry" id="inquiry-form" novalidate>
+        <h2 class="section-title" id="contact-title">Tell us what your team needs.</h2>
+        <span class="rule"></span>
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-name">Name <span class="req">*</span></label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="f-company">Company</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="f-product">Product interest</label>
+            <select id="f-product" name="product">
+              <option value="">Select a product line</option>
+              <option>Maid Cart Bags</option>
+              <option>Pocket Organizers</option>
+              <option>Linen Hampers &amp; Liners</option>
+              <option>Something else / not sure</option>
+            </select>
+          </div>
+          <div class="field field--full">
+            <label for="f-msg">Message</label>
+            <textarea id="f-msg" name="message" rows="3"></textarea>
+          </div>
+        </div>
+        {form_actions()}
+      </form>
+      <aside class="contact-aside" aria-label="Contact details">
+        <h2>Hospitality Textile Supply</h2>
+        <span class="rule"></span>
+        <p class="sub">Product and ordering inquiries</p>
+        {contact_lines()}
+      </aside>
+    </div>
+  </section>
+</main>
+""" + footer()
+
+
+# ---------------- Pocket Organizers ----------------
+def pockets():
+    page = "pocket-organizers.html"
+    items = [
+        ("deluxe-caddy-12.jpg", "Deluxe Laundry Caddy, 12 Pocket, Brown", "Hanging 12-pocket laundry caddy filled with housekeeping supplies"),
+        ("caddy-6-pocket.jpg", "Caddy Bag for Laundry Cart, 6 Pocket, 13 x 32, Brown", "Brown 6-pocket caddy bag with hanging loops"),
+        ("caddy-9-pocket.jpg", "Caddy Bag for Laundry Cart, 9 Pocket, 12 x 18 x 30, Brown", "Brown 9-pocket caddy bag with hanging loops"),
+    ]
+    cards = "".join(product_card(i, escape(t), a, t) for i, t, a in items)
+    options = ["Pocket Organizers"] + [t for _, t, _ in items]
+    return head("Pocket Organizers | Hospitality Textile Supply",
+                "Hanging pocket organizers and caddy bags for housekeeping and laundry carts.") + header(page, "#inquiry-form") + breadcrumb("Pocket Organizers") + f"""
+<main id="main" class="wrap">
+  <section class="product-grid product-grid--3" aria-label="Pocket organizer options">
+    {cards}
+  </section>
+  <section class="inquiry inquiry--boxed" style="margin-bottom:40px" aria-labelledby="form-title">
+    <form class="js-inquiry" id="inquiry-form" novalidate>
+      <h2 class="form-title" id="form-title" style="margin-bottom:16px">Request product information</h2>
+      {inquiry_fields(options, "Pocket Organizers", cols3=True)}
+      {form_actions()}
+    </form>
+    <aside class="contact-aside">
+      {contact_lines(label=True)}
+      <div class="other-cats">
+        <h3>Other Categories</h3>
+        <ul>{other_cats_list(page)}</ul>
+      </div>
+    </aside>
+  </section>
+</main>
+""" + footer()
+
+
+# ---------------- Maid Cart Bags ----------------
+def maid():
+    page = "maid-cart-bags.html"
+    items = [
+        ("poly-loop-snap.jpg", "Poly Laundry Bag Loop &amp; Snap, 12 x 18 x 36", "Poly Laundry Bag Loop & Snap, 12 x 18 x 36", "Brown poly laundry bag with loops and snaps"),
+        ("maids-cart-bag.jpg", "Maids Cart Bag 10.5 x 17 x 27, Brown", "Maids Cart Bag 10.5 x 17 x 27, Brown", "Brown maids cart bag with grommets"),
+        ("nylon-fold-over.jpg", "Housekeeping Cart Nylon Bag Fold Over Flaps, 12 x 18 x 36", "Housekeeping Cart Nylon Bag Fold Over Flaps, 12 x 18 x 36", "Green nylon housekeeping cart bag with fold-over flaps"),
+        (None, "HD Vinyl Bag for Housekeeping Carts with Open Front, Brown", "HD Vinyl Bag for Housekeeping Carts with Open Front, Brown", ""),
+    ]
+    cards = "".join(product_card(i, t, a, raw) for i, t, raw, a in items)
+    options = ["Maid Cart Bags"] + [raw for _, _, raw, _ in items]
+    return head("Maid Cart Bags | Hospitality Textile Supply",
+                "Replacement maid cart bags for housekeeping carts: poly, nylon and heavy-duty vinyl.") + header(page, "#inquiry-form") + breadcrumb("Maid Cart Bags") + f"""
+<main id="main" class="wrap">
+  <section class="product-grid product-grid--2" aria-label="Maid cart bag options">
+    {cards}
+  </section>
+  <section class="inquiry" style="border-top:2px solid var(--gold);padding-top:28px;margin-bottom:40px" aria-labelledby="form-title">
+    <form class="js-inquiry" id="inquiry-form" novalidate>
+      <h2 class="form-title" id="form-title" style="margin-bottom:16px">Request product information</h2>
+      {inquiry_fields(options, "Maid Cart Bags")}
+      {form_actions()}
+    </form>
+    <aside class="contact-aside">
+      <h2>Contact</h2>
+      <span class="rule"></span>
+      {contact_lines()}
+      <div class="other-cats">
+        <h3>Other Categories</h3>
+        <ul>{other_cats_list(page)}</ul>
+      </div>
+    </aside>
+  </section>
+</main>
+""" + footer()
+
+
+# ---------------- Linen Hampers & Liners ----------------
+def linen():
+    page = "linen-hampers-liners.html"
+    cats = " ".join(f'<a href="{h}">{n}</a>' for h, n in CATEGORIES)
+    options = ["Linen Hamper & Liner", "Linen Hampers & Liners (general)"]
+    return head("Linen Hampers & Liners | Hospitality Textile Supply",
+                "Linen hampers and liners for hospitals, hotels and laundry collection.") + header(page, "#inquiry-form") + breadcrumb("Linen Hampers &amp; Liners") + f"""
+<main id="main" class="wrap" style="max-width:1100px">
+  <section class="feature" aria-labelledby="item-title">
+    <img src="img/linen-hamper-liner.jpg" alt="White linen hamper liner on a steel frame with casters" width="545" height="325">
+    <div>
+      <h2 id="item-title">Linen Hamper &amp; Liner</h2>
+      <p>Contact us to discuss your requirements.</p>
+      <a class="btn" href="#inquiry-form" data-enquire="Linen Hamper &amp; Liner">Enquire About This Item</a>
+    </div>
+  </section>
+  <section class="inquiry--boxed" aria-labelledby="form-title">
+    <form class="js-inquiry" id="inquiry-form" novalidate>
+      <h2 class="form-title" id="form-title" style="margin-bottom:16px">Request product information</h2>
+      {inquiry_fields(options, "Linen Hamper & Liner", cols3=True)}
+      {form_actions()}
+    </form>
+  </section>
+  <div class="contact-strip">
+    <span>{MAIL_SVG}<strong>Contact</strong>&nbsp;<a href="mailto:{EMAIL}">{EMAIL}</a></span>
+    <span>{PHONE_SVG}or call&nbsp;<a href="tel:{PHONE_HREF}"><strong>{PHONE}</strong></a></span>
+  </div>
+  <nav class="cat-strip" aria-label="Other categories"><strong>Other Categories:</strong> {cats}</nav>
+</main>
+""" + footer()
+
+
+for name, fn in [("index.html", home), ("pocket-organizers.html", pockets),
+                 ("maid-cart-bags.html", maid), ("linen-hampers-liners.html", linen)]:
+    (OUT / name).write_text(fn(), encoding="utf-8")
+    print("wrote", name)

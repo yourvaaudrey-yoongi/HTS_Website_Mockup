@@ -12,7 +12,7 @@ PHONE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><pa
 CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
 
 CATEGORIES = [
-    ("maid-cart-bags.html", "Maid Cart Bags"),
+    ("maid-cart-bags.html", "Housekeeping Cart Bags"),
     ("pocket-organizers.html", "Pocket Organizers"),
     ("linen-hampers-liners.html", "Linen Hampers &amp; Liners"),
 ]
@@ -172,7 +172,7 @@ def other_cats_list(current):
 # ---------------- Homepage ----------------
 def home():
     return head("Hospitality Textile Supply | Cart Bags, Pocket Organizers & Linen Hampers",
-                "Textile essentials for housekeeping teams: maid cart bags, pocket organizers and linen hampers & liners for hotels, healthcare, senior living, gyms, spas and campuses.") + header() + f"""
+                "Textile essentials for housekeeping teams: housekeeping cart bags, pocket organizers and linen hampers & liners for hotels, healthcare, senior living, gyms, spas and campuses.") + header() + f"""
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-copy">
@@ -182,7 +182,7 @@ def home():
       <a class="btn" href="#products">Explore Products</a>
     </div>
     <div class="hero-media">
-      <img src="img/hero-cart.jpg" alt="Housekeeping cart with black cart bags in a hotel hallway" width="604" height="394">
+      <img src="img/hero-cart.jpg" alt="Housekeeping cart with black cart bags and stacked towels in a hotel hallway" width="633" height="492">
     </div>
   </section>
 
@@ -192,8 +192,8 @@ def home():
       <span class="rule"></span>
       <div class="card-grid">
         <a class="line-card" href="maid-cart-bags.html">
-          <div class="media"><img src="img/maid-cart-bags.jpg" alt="Brown maid cart bag with hanging loops" loading="lazy"></div>
-          <div class="body"><h3>Maid Cart Bags</h3><span class="rule"></span><span class="more">View options &rarr;</span></div>
+          <div class="media"><img src="img/maid-cart-bags.jpg" alt="Brown housekeeping cart bag with hanging loops" loading="lazy"></div>
+          <div class="body"><h3>Housekeeping Cart Bags</h3><span class="rule"></span><span class="more">View options &rarr;</span></div>
         </a>
         <a class="line-card" href="pocket-organizers.html">
           <div class="media"><img src="img/pocket-organizers.jpg" alt="Black hanging pocket organizer holding cleaning supplies" loading="lazy"></div>
@@ -224,7 +224,7 @@ def home():
       <div>
         <h2 class="section-title" id="about-title">About HTS</h2>
         <span class="rule"></span>
-        <p>Hospitality Textile Supply provides the textile essentials that keep housekeeping and laundry teams moving: maid cart bags, pocket organizers, and linen hampers &amp; liners.</p>
+        <p>Hospitality Textile Supply provides the textile essentials that keep housekeeping and laundry teams moving: housekeeping cart bags, pocket organizers, and linen hampers &amp; liners.</p>
         <p>Tell us what your team uses today, including cart models, sizes and colors, and we&rsquo;ll help you find the right fit.</p>
       </div>
       <ul class="about-list">
@@ -257,7 +257,7 @@ def home():
             <label for="f-product">Product interest</label>
             <select id="f-product" name="product">
               <option value="">Select a product line</option>
-              <option>Maid Cart Bags</option>
+              <option>Housekeeping Cart Bags</option>
               <option>Pocket Organizers</option>
               <option>Linen Hampers &amp; Liners</option>
               <option>Something else / not sure</option>
@@ -316,7 +316,7 @@ def pockets():
 """ + footer()
 
 
-# ---------------- Maid Cart Bags ----------------
+# ---------------- Housekeeping Cart Bags ----------------
 def maid():
     page = "maid-cart-bags.html"
     items = [
@@ -326,17 +326,17 @@ def maid():
         (None, "HD Vinyl Bag for Housekeeping Carts with Open Front, Brown", "HD Vinyl Bag for Housekeeping Carts with Open Front, Brown", ""),
     ]
     cards = "".join(product_card(i, t, a, raw) for i, t, raw, a in items)
-    options = ["Maid Cart Bags"] + [raw for _, _, raw, _ in items]
-    return head("Maid Cart Bags | Hospitality Textile Supply",
-                "Replacement maid cart bags for housekeeping carts: poly, nylon and heavy-duty vinyl.") + header(page, "#inquiry-form") + breadcrumb("Maid Cart Bags") + f"""
+    options = ["Housekeeping Cart Bags"] + [raw for _, _, raw, _ in items]
+    return head("Housekeeping Cart Bags | Hospitality Textile Supply",
+                "Replacement housekeeping cart bags for housekeeping carts: poly, nylon and heavy-duty vinyl.") + header(page, "#inquiry-form") + breadcrumb("Housekeeping Cart Bags") + f"""
 <main id="main" class="wrap">
-  <section class="product-grid product-grid--2" aria-label="Maid cart bag options">
+  <section class="product-grid product-grid--2" aria-label="Housekeeping cart bag options">
     {cards}
   </section>
   <section class="inquiry" style="border-top:2px solid var(--gold);padding-top:28px;margin-bottom:40px" aria-labelledby="form-title">
     <form class="js-inquiry" id="inquiry-form" novalidate>
       <h2 class="form-title" id="form-title" style="margin-bottom:16px">Request product information</h2>
-      {inquiry_fields(options, "Maid Cart Bags")}
+      {inquiry_fields(options, "Housekeeping Cart Bags")}
       {form_actions()}
     </form>
     <aside class="contact-aside">
